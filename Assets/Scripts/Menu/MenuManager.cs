@@ -5,6 +5,7 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager Instance;
+
     [SerializeField] MenuVisibility[] menus;
 
     public void Awake()
@@ -27,6 +28,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+
     public void OpenMenu(MenuVisibility menu)
     {
         for (int i = 0; i < menus.Length; i++)
@@ -38,10 +40,11 @@ public class MenuManager : MonoBehaviour
         }
         menu.Visible();
     }
+
+
     public void CloseMenu(MenuVisibility menu)
     {
         menu.NoVisible();
     }
-
 
 }

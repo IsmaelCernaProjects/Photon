@@ -4,9 +4,6 @@ using UnityEngine;
 using Photon.Pun;
 using TMPro;
 
-
-
-
 public class Launcher : MonoBehaviourPunCallbacks
 {
     [SerializeField] TMP_InputField roomNameInputField;
@@ -14,50 +11,62 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] TMP_Text ErrorMessage;
     void Start()
     {
-        // conectar al master
+        //Conectar al master
         Debug.Log("Conectando");
-        //MenuManager.Instance.OpenMenuName("Loading"); (paso 60)
+
+        //conectar a settings
         PhotonNetwork.ConnectUsingSettings();
+
         MenuManager.Instance.OpenMenuName("Loading");
     }
+
     public override void OnConnectedToMaster()
     {
-        //borran la siguiente linea es el comportamiento base del metodo
-        // base.OnConnectedToMaster();
-        Debug.Log("Conectado");
+        Debug.Log("Conectando");
         PhotonNetwork.JoinLobby();
     }
-    public void LeaveRoom()
+
+    public override void OnJoinedLobby()
     {
-        PhotonNetwork.LeaveRoom();
-        MenuManager.Instance.OpenMenuName("Loading");
-    }
-    public override void OnLeftRoom()
-    {
+        
+        Debug.Log("Conectando Al Lobby");
         MenuManager.Instance.OpenMenuName("Home");
     }
+
+    public void createRoom()
+    {
+        //Se verifica si el Input esta vacio para evitar errores
+        if (string.IsNullOrEmpty(roomNameInputField.text))
+        {
+            return;
+        }
+
+        //Se llama a la función crear Room y se le pasa el nombre que se ingresa en el InputText
+        PhotonNetwork.CreateRoom(roomNameInputField.text);
+        // Se carga loading para el tiempo de carga
+        MenuManager.Instance.OpenMenuName("Loading");
+    }
+
     public override void OnJoinedRoom()
     {
         MenuManager.Instance.OpenMenuName("Room");
         roomName.text = PhotonNetwork.CurrentRoom.Name;
     }
+
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        ErrorMessage.text = "Error al crear la sala" + message;
+        ErrorMessage.text = "Error al crear sala" + message;
         MenuManager.Instance.OpenMenuName("Error");
     }
 
-        public void CreateRoom()
-{
-    // si presionamos el boton y este esta vacio no procedera
-    if (string.IsNullOrEmpty(roomNameInputField.text))
+    public void LeaveRoom()
     {
-        return;
-    }
-    // Llamamos la Funcion CreateRoom de photon para enviarle el nombre
-PhotonNetwork.CreateRoom(roomNameInputField.text);
-        //Abrimos Loading Menu para cargar
+        PhotonNetwork.LeaveRoom();
         MenuManager.Instance.OpenMenuName("Loading");
-}
-}
+    }
 
+    public override void OnLeftRoom()
+    {
+        MenuManager.Instance.OpenMenuName("Home");
+    }
+}
